@@ -185,6 +185,45 @@ def stats():
         except Exception:
             phase_values.append(0)
 
+    # 3. Wykres: Wielkość grup badawczych
+    enrollment_labels = ["Małe (<100)", "Średnie (100-500)", "Duże (>500)"]
+    enrollment_values = [0, 0, 0]
+
+    try:
+        df_enroll = pd.read_sql("SELECT Enrollment FROM trials", conn)
+        df_enroll["Enrollment"] = pd.to_numeric(
+            df_enroll["Enrollment"], errors="coerce"
+        )
+        df_enroll = df_enroll.dropna()
+
+        enrollment_values[0] = len(df_enroll[df_enroll["Enrollment"] < 100])
+        enrollment_values[1] = len(
+            df_enroll[
+                (df_enroll["Enrollment"] >= 100) & (df_enroll["Enrollment"] <= 500)
+            ]
+        )
+        enrollment_values[2] = len(df_enroll[df_enroll["Enrollment"] > 500])
+    except Exception:
+        enrollment_values = [0, 0, 0]
+
+    # 4. Wykres: Najpopularniejsze choroby
+    try:
+        df_conditions = pd.read_sql("SELECT Conditions FROM trials", conn)
+        top_conditions = (
+            df_conditions["Conditions"]
+            .str.split("|")
+            .explode()
+            .str.strip()
+            .value_counts()
+            .head(10)
+        )
+
+        conditions_labels = top_conditions.index.tolist()
+        conditions_values = top_conditions.values.tolist()
+    except Exception:
+        conditions_labels = []
+        conditions_values = []
+
     return render_template(
         "stats.html",
         timeline_labels=timeline_labels,
@@ -192,6 +231,10 @@ def stats():
         timeline_details=timeline_details,
         phase_labels=phase_labels,
         phase_values=phase_values,
+        enrollment_labels=enrollment_labels,
+        enrollment_values=enrollment_values,
+        conditions_labels=conditions_labels,
+        conditions_values=conditions_values,
     )
 
 
