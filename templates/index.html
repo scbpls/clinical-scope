@@ -198,9 +198,19 @@ endblock %} {% block content %}
             <div class="media-content">
               <div class="content">
                 <div class="is-flex is-justify-content-space-between mb-2">
-                  <h3 class="title is-5 mb-0 mr-2 text-title" style="flex: 1">
-                    {{ trial['Study Title'] }}
-                  </h3>
+                  <a
+                    href="https://clinicaltrials.gov/study/{{ trial['NCT Number'] }}"
+                    target="_blank"
+                    class="button is-small is-ghost p-0 h-auto is-justify-content-start"
+                    style="text-align: left; width: 100%"
+                  >
+                    <h3
+                      class="title is-5 has-text-link mb-0 mr-2 text-title"
+                      style="flex: 1"
+                    >
+                      {{ trial['Study Title'] }}
+                    </h3>
+                  </a>
                   <div class="is-flex-shrink-0">
                     <button
                       class="button is-small is-ghost translate-card-btn"
@@ -280,16 +290,7 @@ endblock %} {% block content %}
                     </span>
                   </div>
                   <div class="column is-narrow">
-                    <a
-                      href="https://clinicaltrials.gov/study/{{ trial['NCT Number'] }}"
-                      target="_blank"
-                      class="button is-small is-ghost p-0 h-auto"
-                    >
-                      <span>ID: {{ trial['NCT Number'] }}</span>
-                      <span class="icon is-small ml-1"
-                        ><i class="fa-solid fa-external-link-alt"></i
-                      ></span>
-                    </a>
+                    <span>ID: {{ trial['NCT Number'] }}</span>
                   </div>
                 </div>
                 {% if trial['Conditions'] %}
