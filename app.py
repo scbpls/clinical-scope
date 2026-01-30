@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for
 import pandas as pd
+from deep_translator import GoogleTranslator
 
 from database import (
     get_db,
@@ -236,6 +237,33 @@ def stats():
         conditions_labels=conditions_labels,
         conditions_values=conditions_values,
     )
+
+
+@app.route("/translate", methods=["POST"])
+def translate_text():
+    """Tłumaczy tekst z karty"""
+    data = request.get_json()
+
+    try:
+        translator = GoogleTranslator(source="auto", target="pl")
+    except Exception:
+        return {"error": "Błąd inicjalizacji tłumacza"}, 500
+
+    if isinstance(data, dict) and "batch" in data:
+        results = {}
+
+        for key, text in data["batch"].items():
+            if text and isinstance(text, str) and len(text.strip()) > 1:
+                try:
+                    results[key] = translator.translate(text[:5000])
+                except Exception as e:
+                    print(f"Błąd tłumaczenia pola {key}: {e}")
+                    results[key] = text
+            else:
+                results[key] = text
+        return {"translated_batch": results}
+
+    return {"error": "Błędne dane"}, 400
 
 
 if __name__ == "__main__":

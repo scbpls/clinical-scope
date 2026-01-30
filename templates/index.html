@@ -189,7 +189,7 @@ endblock %} {% block content %}
             ><i class="fa-solid fa-circle-exclamation fa-2x"></i
           ></span>
           <p class="mt-2">
-            <strong>Brak wyników.</strong> Spróbuj zmienić ustawienia filtrów.
+            <strong>Brak wyników</strong>
           </p>
         </div>
         {% endif %} {% for trial in trials %}
@@ -197,9 +197,27 @@ endblock %} {% block content %}
           <article class="media">
             <div class="media-content">
               <div class="content">
-                <p class="title is-5 has-text-link mb-1">
-                  {{ trial['Study Title'] }}
-                </p>
+                <div class="is-flex is-justify-content-space-between mb-2">
+                  <h3
+                    class="title is-5 has-text-link mb-0 mr-2 text-title"
+                    style="flex: 1"
+                  >
+                    {{ trial['Study Title'] }}
+                  </h3>
+                  <div class="is-flex-shrink-0">
+                    <button
+                      class="button is-small is-ghost translate-card-btn"
+                      onclick="toggleCardTranslation(this)"
+                    >
+                      <span class="icon"
+                        ><i class="fa-solid fa-language"></i
+                      ></span>
+                      <span class="btn-text has-text-weight-medium"
+                        >Przetłumacz</span
+                      >
+                    </button>
+                  </div>
+                </div>
                 <div class="tags mb-2">
                   {% if trial['Phases'] %}
                   <span class="tag is-info is-light"
@@ -221,20 +239,24 @@ endblock %} {% block content %}
                     <span class="icon has-text-primary"
                       ><i class="fa-solid fa-pills"></i
                     ></span>
-                    <span
-                      ><strong>Interwencje:</strong> {{ trial['Interventions']
-                      }}</span
-                    >
+                    <span>
+                      <strong>Interwencje:</strong>
+                      <span class="text-interventions"
+                        >{{ trial['Interventions'] }}</span
+                      >
+                    </span>
                   </div>
                   {% endif %} {% if trial['Locations'] %}
                   <div class="icon-text">
                     <span class="icon has-text-danger"
                       ><i class="fa-solid fa-map-marker-alt"></i
                     ></span>
-                    <span
-                      ><strong>Lokalizacja:</strong> {{ trial['Locations']
-                      }}</span
-                    >
+                    <span>
+                      <strong>Lokalizacja:</strong>
+                      <span class="text-locations"
+                        >{{ trial['Locations'] }}</span
+                      >
+                    </span>
                   </div>
                   {% endif %}
                 </div>
@@ -276,7 +298,7 @@ endblock %} {% block content %}
                 {% if trial['Conditions'] %}
                 <div class="is-size-7 mt-2">
                   <strong>Choroby:</strong>
-                  <span class="has-text-grey-dark"
+                  <span class="has-text-grey-dark text-conditions"
                     >{{ trial['Conditions'] }}</span
                   >
                 </div>
@@ -295,7 +317,7 @@ endblock %} {% block content %}
                     class="content is-hidden is-size-7 has-text-grey-dark mt-2 p-3 has-background-white-ter summary-content"
                     style="border-radius: 4px"
                   >
-                    {{ trial['Brief Summary'] }}
+                    <div class="text-summary">{{ trial['Brief Summary'] }}</div>
                   </div>
                 </div>
                 {% endif %}
@@ -359,6 +381,109 @@ endblock %} {% block content %}
       icon.classList.add('fa-chevron-up');
       textSpan.textContent = 'Ukryj opis';
     }
+  }
+
+  function toggleCardTranslation(btn) {
+    const card = btn.closest('.result-box');
+    const btnText = btn.querySelector('.btn-text');
+
+    const elTitle = card.querySelector('.text-title');
+    const elInterventions = card.querySelector('.text-interventions');
+    const elLocations = card.querySelector('.text-locations');
+    const elConditions = card.querySelector('.text-conditions');
+    const elSummary = card.querySelector('.text-summary');
+
+    // PL -> EN
+    if (btn.dataset.state === 'translated') {
+      if (elTitle) elTitle.textContent = elTitle.dataset.original;
+      if (elInterventions)
+        elInterventions.textContent = elInterventions.dataset.original;
+      if (elLocations) elLocations.textContent = elLocations.dataset.original;
+      if (elConditions)
+        elConditions.textContent = elConditions.dataset.original;
+      if (elSummary) elSummary.textContent = elSummary.dataset.original;
+
+      btnText.textContent = 'Przetłumacz';
+      btn.classList.remove('is-active');
+      btn.dataset.state = 'original';
+      return;
+    }
+
+    // EN -> PL
+    if (btn.dataset.cached) {
+      const cache = JSON.parse(btn.dataset.cached);
+      if (elTitle) elTitle.textContent = cache.title;
+      if (elInterventions) elInterventions.textContent = cache.interventions;
+      if (elLocations) elLocations.textContent = cache.locations;
+      if (elConditions) elConditions.textContent = cache.conditions;
+      if (elSummary) elSummary.textContent = cache.summary;
+
+      btnText.textContent = 'Pokaż oryginał';
+      btn.classList.add('is-active');
+      btn.dataset.state = 'translated';
+      return;
+    }
+
+    const batchData = {};
+
+    if (elTitle) {
+      elTitle.dataset.original = elTitle.textContent;
+      batchData.title = elTitle.textContent;
+    }
+    if (elInterventions) {
+      elInterventions.dataset.original = elInterventions.textContent;
+      batchData.interventions = elInterventions.textContent;
+    }
+    if (elLocations) {
+      elLocations.dataset.original = elLocations.textContent;
+      batchData.locations = elLocations.textContent;
+    }
+    if (elConditions) {
+      elConditions.dataset.original = elConditions.textContent;
+      batchData.conditions = elConditions.textContent;
+    }
+    if (elSummary) {
+      elSummary.dataset.original = elSummary.textContent;
+      batchData.summary = elSummary.textContent;
+    }
+
+    if (Object.keys(batchData).length === 0) return;
+
+    btn.classList.add('is-loading');
+
+    fetch('/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ batch: batchData }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        btn.classList.remove('is-loading');
+
+        if (data.translated_batch) {
+          const res = data.translated_batch;
+
+          if (elTitle && res.title) elTitle.textContent = res.title;
+          if (elInterventions && res.interventions)
+            elInterventions.textContent = res.interventions;
+          if (elLocations && res.locations)
+            elLocations.textContent = res.locations;
+          if (elConditions && res.conditions)
+            elConditions.textContent = res.conditions;
+          if (elSummary && res.summary) elSummary.textContent = res.summary;
+
+          btn.dataset.cached = JSON.stringify(res);
+
+          btnText.textContent = 'Pokaż oryginał';
+          btn.classList.add('is-active');
+          btn.dataset.state = 'translated';
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        btn.classList.remove('is-loading');
+        alert('Błąd połączenia z serwisem tłumaczeń');
+      });
   }
 </script>
 {% endblock %}

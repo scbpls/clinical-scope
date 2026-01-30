@@ -5,7 +5,7 @@
 
   /* SEMANTYCZNE */
   --color-success: #48c774;
-  --color-info: #3298dc;
+  --color-info: #3273dc;
   --color-warning: #ffdd57;
   --color-danger: #f14668;
   --color-white: #ffffff;
@@ -79,11 +79,41 @@ body {
   border-color: var(--primary-color);
 }
 
+.result-box .title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  line-height: 1.3;
+  flex: 1;
+}
+
 .sidebar-sticky {
   position: sticky;
   top: 5.5rem;
   background-color: var(--bg-card);
   border: 1px solid var(--border-light);
+}
+
+/* TŁUMACZENIE KART */
+.translate-card-btn {
+  color: var(--primary-color);
+  transition: all 0.2s ease;
+  padding-right: 0;
+}
+
+.translate-card-btn:hover {
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+.translate-card-btn.is-active {
+  color: var(--color-success);
+}
+
+.translate-card-btn,
+.translate-card-btn:focus {
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
 /* STATYSTYKI */
