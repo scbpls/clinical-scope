@@ -32,6 +32,32 @@
         </div>
       </div>
     </div>
+    <div class="columns mt-4">
+      <div class="column is-5">
+        <div class="box stat-card">
+          <h3 class="title is-6 has-text-centered">Wielkość grup badawczych</h3>
+          <div class="chart-container" style="height: 350px">
+            <canvas id="enrollmentChart"></canvas>
+          </div>
+          <p class="content is-small has-text-grey has-text-centered mt-2">
+            Podział badań ze względu na liczbę uczestników
+          </p>
+        </div>
+      </div>
+      <div class="column is-7">
+        <div class="box stat-card">
+          <h3 class="title is-6 has-text-centered">
+            Najpopularniejsze choroby
+          </h3>
+          <div class="chart-container" style="height: 350px">
+            <canvas id="conditionsChart"></canvas>
+          </div>
+          <p class="content is-small has-text-grey has-text-centered mt-2">
+            Najczęściej występujące schorzenia
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 {% endblock %} {% block scripts %}
@@ -41,7 +67,11 @@
     "timelineValues": {{ timeline_values | tojson }},
     "timelineDetails": {{ timeline_details | tojson }},
     "phaseLabels": {{ phase_labels | tojson }},
-    "phaseValues": {{ phase_values | tojson }}
+    "phaseValues": {{ phase_values | tojson }},
+    "enrollmentLabels": {{ enrollment_labels | tojson }},
+    "enrollmentValues": {{ enrollment_values | tojson }},
+    "conditionsLabels": {{ conditions_labels | tojson }},
+    "conditionsValues": {{ conditions_values | tojson }}
   }
 </script>
 <script>
@@ -155,6 +185,71 @@
             },
           },
         },
+      },
+    },
+  });
+
+  // 3. Wykres: Wielkość grup badawczych
+  new Chart(document.getElementById('enrollmentChart'), {
+    type: 'doughnut',
+    data: {
+      labels: chartData.enrollmentLabels,
+      datasets: [
+        {
+          label: 'Liczba grup badawczych',
+          data: chartData.enrollmentValues,
+          backgroundColor: [
+            getColor('--color-info'),
+            getColor('--color-warning'),
+            getColor('--color-success'),
+          ],
+          borderWidth: 0,
+          hoverOffset: 4,
+        },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 20,
+          },
+        },
+      },
+    },
+  });
+
+  // 4. Wykres: Najpopularniejsze choroby
+  new Chart(document.getElementById('conditionsChart'), {
+    type: 'bar',
+    data: {
+      labels: chartData.conditionsLabels,
+      datasets: [
+        {
+          label: 'Liczba badań',
+          data: chartData.conditionsValues,
+          backgroundColor: getColor('--primary-color'),
+          borderRadius: 4,
+        },
+      ],
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      scales: {
+        x: { beginAtZero: true },
+        y: {
+          ticks: {
+            autoSkip: false,
+            font: { size: 11 },
+          },
+        },
+      },
+      plugins: {
+        legend: { display: false },
       },
     },
   });
