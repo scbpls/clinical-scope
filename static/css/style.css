@@ -1,0 +1,214 @@
+:root {
+  /* GŁÓWNE*/
+  --primary-color: #3273dc;
+  --chart-fill-color: rgba(50, 115, 220, 0.1);
+
+  /* SEMANTYCZNE */
+  --color-success: #48c774;
+  --color-info: #3298dc;
+  --color-warning: #ffdd57;
+  --color-danger: #f14668;
+  --color-white: #ffffff;
+
+  /* TŁA */
+  --bg-body: #f5f7fa;
+  --bg-card: #ffffff;
+  --bg-hover: #f9fafb;
+  --bg-navbar: rgba(255, 255, 255, 0.95);
+
+  /* TEKST */
+  --text-main: #2c3e50;
+  --text-muted: #6c757d;
+  --text-light: #b5b5b5;
+
+  /* OBRAMOWANIA */
+  --border-light: #ededed;
+  --border-strong: #dbdbdb;
+
+  /* SCROLLBAR */
+  --scrollbar-thumb: #cccccc;
+
+  /* CIENIE */
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.03);
+  --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.1);
+  --shadow-active: 0 4px 15px rgba(50, 115, 220, 0.3);
+}
+
+body {
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding-top: 4rem;
+}
+
+/* NAVBAR */
+.navbar {
+  background-color: var(--bg-navbar);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.navbar-item {
+  color: var(--text-muted);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navbar-item:hover,
+.navbar-item.is-active {
+  color: var(--primary-color) !important;
+  background-color: transparent !important;
+}
+
+.navbar-item.is-active {
+  font-weight: 700;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+/* WYNIKI I KARTY */
+.result-box {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.result-box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary-color);
+}
+
+.sidebar-sticky {
+  position: sticky;
+  top: 5.5rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+}
+
+/* STATYSTYKI */
+.chart-container {
+  position: relative;
+  height: 300px;
+  width: 100%;
+}
+
+.stat-card {
+  height: 100%;
+  background-color: var(--bg-card);
+  border-radius: 6px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-light);
+}
+
+/* PAGINACJA */
+.pagination-link,
+.pagination-previous,
+.pagination-next {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.pagination-link:hover,
+.pagination-previous:hover,
+.pagination-next:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: var(--primary-color);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+.pagination-link.is-current {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--color-white);
+  box-shadow: var(--shadow-active);
+  transform: translateY(-2px);
+}
+
+.pagination-previous[disabled],
+.pagination-next[disabled] {
+  background-color: var(--bg-body);
+  border-color: transparent;
+  box-shadow: none;
+  transform: none;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* CHECKBOXY */
+.checkbox-container {
+  max-height: 140px;
+  overflow-y: auto;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 8px;
+  background-color: var(--bg-card);
+}
+
+.checkbox-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  color: var(--text-main);
+}
+
+.checkbox-label:hover {
+  background-color: var(--bg-hover);
+}
+
+/* IKONY */
+.control.has-icons-left .icon {
+  color: var(--text-light) !important;
+  height: 2.5em;
+  width: 2.5em;
+  z-index: 5;
+}
+
+.icon {
+  color: inherit;
+}
+
+.title .icon {
+  vertical-align: middle;
+}
+
+/* TAGI */
+.tag.border-grey {
+  border: 1px solid var(--border-strong);
+  color: var(--text-muted);
+}
+
+/* SCROLLBAR */
+.checkbox-container::-webkit-scrollbar {
+  width: 6px;
+}
+.checkbox-container::-webkit-scrollbar-track {
+  background: var(--bg-body);
+}
+.checkbox-container::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+/* POMOCNICZE */
+.has-text-info {
+  color: var(--color-info) !important;
+}
+.has-text-success {
+  color: var(--color-success) !important;
+}
+.has-text-warning {
+  color: var(--color-warning) !important;
+}
+.has-text-danger {
+  color: var(--color-danger) !important;
+}
+.has-text-link {
+  color: var(--primary-color) !important;
+}

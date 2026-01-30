@@ -1,0 +1,162 @@
+{% extends "base.html" %} {% block title %}ClinicalScope - Statystyki{% endblock
+%} {% block head_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0"></script>
+{% endblock %} {% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-7">
+        <div class="box stat-card">
+          <h3 class="title is-6 has-text-centered">
+            Dynamika rozpoczętych badań
+          </h3>
+          <div class="chart-container" style="height: 350px">
+            <canvas id="timelineChart"></canvas>
+          </div>
+          <p class="content is-small has-text-grey has-text-centered mt-2">
+            Najedź na punkt, aby zobaczyć podział na typy badań
+          </p>
+        </div>
+      </div>
+      <div class="column is-5">
+        <div class="box stat-card">
+          <h3 class="title is-6 has-text-centered">Liczebność faz badań</h3>
+          <div class="chart-container" style="height: 350px">
+            <canvas id="phaseChart"></canvas>
+          </div>
+          <p class="content is-small has-text-grey has-text-centered mt-2">
+            Całkowita liczba badań w poszczególnych fazach
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script id="chart-data" type="application/json">
+  {
+    "timelineLabels": {{ timeline_labels | tojson }},
+    "timelineValues": {{ timeline_values | tojson }},
+    "timelineDetails": {{ timeline_details | tojson }},
+    "phaseLabels": {{ phase_labels | tojson }},
+    "phaseValues": {{ phase_values | tojson }}
+  }
+</script>
+<script>
+  const dataElement = document.getElementById('chart-data');
+  const chartData = JSON.parse(dataElement.textContent);
+
+  // 1. Wykres: Dynamika rozpoczętych badań
+  new Chart(document.getElementById('timelineChart'), {
+    type: 'line',
+    data: {
+      labels: chartData.timelineLabels,
+      datasets: [
+        {
+          label: 'Łączna liczba badań',
+          data: chartData.timelineValues,
+          borderColor: getColor('--primary-color'),
+          backgroundColor: getColor('--chart-fill-color'),
+          fill: true,
+          tension: 0.4,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+        },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true },
+        x: {
+          grid: { display: false },
+          min: '2015',
+        },
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            afterBody: function (context) {
+              const year = context[0].label;
+              const details = chartData.timelineDetails[year];
+
+              if (!details) return [];
+
+              let lines = [];
+
+              for (const [type, count] of Object.entries(details)) {
+                if (count > 0) lines.push(`${type}: ${count}`);
+              }
+
+              return lines;
+            },
+          },
+        },
+        zoom: {
+          pan: {
+            enabled: true,
+            mode: 'x',
+          },
+          zoom: {
+            wheel: {
+              enabled: true,
+            },
+            pinch: {
+              enabled: true,
+            },
+            mode: 'x',
+          },
+        },
+      },
+    },
+  });
+
+  // 2. Wykres: Liczebność faz badań
+  const multilinePhaseLabels = chartData.phaseLabels.map((label) => {
+    if (label && label.includes('Wczesna')) return ['Wczesna', 'faza 1'];
+
+    return label;
+  });
+
+  new Chart(document.getElementById('phaseChart'), {
+    type: 'bar',
+    data: {
+      labels: multilinePhaseLabels,
+      datasets: [
+        {
+          label: 'Liczba badań',
+          data: chartData.phaseValues,
+          backgroundColor: getColor('--primary-color'),
+          borderRadius: 4,
+        },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      scales: { y: { beginAtZero: true } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: function (context) {
+              let label = context[0].label;
+
+              if (Array.isArray(label)) {
+                return label.join(' ');
+              }
+              if (typeof label === 'string') {
+                return label.replace(',', ' ');
+              }
+
+              return label;
+            },
+          },
+        },
+      },
+    },
+  });
+</script>
+{% endblock %}

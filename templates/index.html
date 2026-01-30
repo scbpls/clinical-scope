@@ -1,0 +1,364 @@
+{% extends "base.html" %} {% block title %}ClinicalScope - Wyszukiwarka{%
+endblock %} {% block content %}
+<section class="section">
+  <div class="container">
+    <div class="columns">
+      <div class="column is-one-quarter">
+        <div class="box sidebar-sticky">
+          <h3 class="title is-5 mb-4">
+            <span class="icon-text">
+              <span class="icon has-text-grey"
+                ><i class="fa-solid fa-filter"></i
+              ></span>
+              <span>Filtrowanie</span>
+            </span>
+          </h3>
+          <p class="subtitle is-7 has-text-grey mb-4">
+            Znaleziono: <strong>{{ total_results }}</strong> badań<br />
+            Strona <strong>{{ page }}</strong> z
+            <strong>{{ total_pages }}</strong>
+          </p>
+          <form action="/" method="get">
+            <div class="field">
+              <label class="label is-small">Słowa kluczowe (AI)</label>
+              <div class="control has-icons-left">
+                <input
+                  class="input is-small"
+                  type="text"
+                  name="q"
+                  placeholder="np. Cancer..."
+                  value="{{ current_q }}"
+                />
+                <span class="icon is-small is-left"
+                  ><i class="fa-solid fa-robot"></i
+                ></span>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label is-small">Status</label>
+              <div class="checkbox-container">
+                {% for status_opt in statuses %}
+                <label class="checkbox checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="status"
+                    value="{{ status_opt }}"
+                    onchange="this.form.submit()"
+                    {%
+                    if
+                    status_opt
+                    in
+                    current_status
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  {{ statuses_map.get(status_opt, status_opt) }}
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="field">
+              <label class="label is-small">Faza</label>
+              <div class="checkbox-container">
+                {% for phase_opt in phases %}
+                <label class="checkbox checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="phase"
+                    value="{{ phase_opt }}"
+                    onchange="this.form.submit()"
+                    {%
+                    if
+                    phase_opt
+                    in
+                    current_phase
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  {{ phases_map.get(phase_opt, phase_opt) }}
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="field">
+              <label class="label is-small">Typ badania</label>
+              <div class="checkbox-container">
+                {% for type_opt in types %}
+                <label class="checkbox checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="type"
+                    value="{{ type_opt }}"
+                    onchange="this.form.submit()"
+                    {%
+                    if
+                    type_opt
+                    in
+                    current_type
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  {{ types_map.get(type_opt, type_opt) }}
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="field">
+              <label class="label is-small">Płeć uczestników</label>
+              <div class="checkbox-container" style="max-height: auto">
+                {% for sex_opt in sexes %} {% if sex_opt|upper != 'ALL' %}
+                <label class="checkbox checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="sex"
+                    value="{{ sex_opt }}"
+                    onchange="this.form.submit()"
+                    {%
+                    if
+                    sex_opt
+                    in
+                    current_sex
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  {{ sex_map.get(sex_opt, sex_opt) }}
+                </label>
+                {% endif %} {% endfor %}
+              </div>
+            </div>
+            <div class="field">
+              <label class="label is-small">Grupa wiekowa</label>
+              <div class="checkbox-container" style="max-height: auto">
+                {% for age_opt in ages %}
+                <label class="checkbox checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="age"
+                    value="{{ age_opt }}"
+                    onchange="this.form.submit()"
+                    {%
+                    if
+                    age_opt
+                    in
+                    current_age
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  {{ age_map.get(age_opt, age_opt) }}
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="field mt-5">
+              <div class="control">
+                <button
+                  type="submit"
+                  class="button is-link is-fullwidth is-small"
+                >
+                  <span class="icon"><i class="fa-solid fa-search"></i></span
+                  ><span>Szukaj</span>
+                </button>
+              </div>
+              <div class="control mt-2">
+                <a
+                  href="/"
+                  class="button is-text is-small is-fullwidth has-text-grey"
+                  >Wyczyść filtry</a
+                >
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="column">
+        <div class="level mb-4">
+          <div class="level-left">
+            <div class="level-item">
+              <h2 class="title is-4">Wyniki wyszukiwania</h2>
+            </div>
+          </div>
+        </div>
+        {% if not trials %}
+        <div class="notification is-warning is-light has-text-centered">
+          <span class="icon is-large has-text-warning"
+            ><i class="fa-solid fa-circle-exclamation fa-2x"></i
+          ></span>
+          <p class="mt-2">
+            <strong>Brak wyników.</strong> Spróbuj zmienić ustawienia filtrów.
+          </p>
+        </div>
+        {% endif %} {% for trial in trials %}
+        <div class="box result-box">
+          <article class="media">
+            <div class="media-content">
+              <div class="content">
+                <p class="title is-5 has-text-link mb-1">
+                  {{ trial['Study Title'] }}
+                </p>
+                <div class="tags mb-2">
+                  {% if trial['Phases'] %}
+                  <span class="tag is-info is-light"
+                    >{{ trial['Phases'] }}</span
+                  >
+                  {% endif %} {% if trial['Study Status'] %}
+                  <span class="tag {{ get_status_class(trial['Status Key']) }}">
+                    {{ trial['Study Status'] }}
+                  </span>
+                  {% endif %} {% if trial['Study Type'] %}
+                  <span class="tag is-white border-grey"
+                    >{{ trial['Study Type'] }}</span
+                  >
+                  {% endif %}
+                </div>
+                <div class="mb-3 is-size-7">
+                  {% if trial['Interventions'] %}
+                  <div class="icon-text mb-1">
+                    <span class="icon has-text-primary"
+                      ><i class="fa-solid fa-pills"></i
+                    ></span>
+                    <span
+                      ><strong>Interwencje:</strong> {{ trial['Interventions']
+                      }}</span
+                    >
+                  </div>
+                  {% endif %} {% if trial['Locations'] %}
+                  <div class="icon-text">
+                    <span class="icon has-text-danger"
+                      ><i class="fa-solid fa-map-marker-alt"></i
+                    ></span>
+                    <span
+                      ><strong>Lokalizacja:</strong> {{ trial['Locations']
+                      }}</span
+                    >
+                  </div>
+                  {% endif %}
+                </div>
+                <div
+                  class="columns is-mobile is-gapless is-size-7 has-text-grey mt-2 pt-2"
+                  style="border-top: 1px solid var(--border-light)"
+                >
+                  <div class="column">
+                    <span class="icon-text mr-3">
+                      <span class="icon has-text-info"
+                        ><i class="fa-solid fa-venus-mars"></i
+                      ></span>
+                      <span class="has-text-grey-dark ml-1"
+                        >{{ trial['Sex'] }}</span
+                      >
+                    </span>
+                    <span class="icon-text">
+                      <span class="icon has-text-success"
+                        ><i class="fa-solid fa-child"></i
+                      ></span>
+                      <span class="has-text-grey-dark ml-1"
+                        >{{ trial['Age'] }}</span
+                      >
+                    </span>
+                  </div>
+                  <div class="column is-narrow">
+                    <a
+                      href="https://clinicaltrials.gov/study/{{ trial['NCT Number'] }}"
+                      target="_blank"
+                      class="button is-small is-ghost p-0 h-auto"
+                    >
+                      <span>ID: {{ trial['NCT Number'] }}</span>
+                      <span class="icon is-small ml-1"
+                        ><i class="fa-solid fa-external-link-alt"></i
+                      ></span>
+                    </a>
+                  </div>
+                </div>
+                {% if trial['Conditions'] %}
+                <div class="is-size-7 mt-2">
+                  <strong>Choroby:</strong>
+                  <span class="has-text-grey-dark"
+                    >{{ trial['Conditions'] }}</span
+                  >
+                </div>
+                {% endif %} {% if trial['Brief Summary'] %}
+                <div class="mt-3">
+                  <button
+                    class="button is-small is-white is-fullwidth has-text-grey toggle-summary"
+                    onclick="toggleSummary(this)"
+                  >
+                    <span class="icon"
+                      ><i class="fa-solid fa-chevron-down"></i
+                    ></span>
+                    <span>Pokaż opis badania</span>
+                  </button>
+                  <div
+                    class="content is-hidden is-size-7 has-text-grey-dark mt-2 p-3 has-background-white-ter summary-content"
+                    style="border-radius: 4px"
+                  >
+                    {{ trial['Brief Summary'] }}
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        </div>
+        {% endfor %} {% if total_pages > 1 %}
+        <nav
+          class="pagination is-centered is-rounded"
+          role="navigation"
+          aria-label="pagination"
+        >
+          <a class="pagination-previous" {% if page>
+            1 %}href="{{ url_replace(page=page-1) }}"{% else %}disabled{% endif
+            %}> Poprzednia
+          </a>
+          <a class="pagination-next" {% if total_pages>
+            page %}href="{{ url_replace(page=page+1) }}"{% else %}disabled{%
+            endif %}> Następna
+          </a>
+          <ul class="pagination-list">
+            {% for p in range(1, total_pages + 1) %} {% if p == 1 or p ==
+            total_pages or (p >= page - 2 and page + 2 >= p) %}
+            <li>
+              <a
+                class="pagination-link {{ 'is-current' if p == page else '' }}"
+                href="{{ url_replace(page=p) }}"
+                aria-label="Goto page {{ p }}"
+              >
+                {{ p }}
+              </a>
+            </li>
+            {% elif p == page - 3 or p == page + 3 %}
+            <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %} {% endfor %}
+          </ul>
+        </nav>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  function toggleSummary(btn) {
+    const content = btn.nextElementSibling;
+    const icon =
+      btn.querySelector('.fa-chevron-down') ||
+      btn.querySelector('.fa-chevron-up');
+    const textSpan = btn.querySelector('span:last-child');
+
+    content.classList.toggle('is-hidden');
+
+    if (content.classList.contains('is-hidden')) {
+      icon.classList.remove('fa-chevron-up');
+      icon.classList.add('fa-chevron-down');
+      textSpan.textContent = 'Pokaż opis badania';
+    } else {
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+      textSpan.textContent = 'Ukryj opis';
+    }
+  }
+</script>
+{% endblock %}

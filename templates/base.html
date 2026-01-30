@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pl" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}ClinicalScope{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+    <script>
+      function getColor(variableName) {
+        return getComputedStyle(document.documentElement)
+          .getPropertyValue(variableName)
+          .trim();
+      }
+    </script>
+    {% block head_scripts %}{% endblock %}
+  </head>
+  <body>
+    <nav
+      class="navbar is-fixed-top"
+      role="navigation"
+      aria-label="main navigation"
+    >
+      <div class="container">
+        <div class="navbar-brand">
+          <a
+            class="navbar-item has-text-weight-bold is-size-4 has-text-link"
+            href="/"
+          >
+            <span class="icon is-medium mr-2 has-text-link"
+              ><i class="fa-solid fa-stethoscope"></i
+            ></span>
+            ClinicalScope
+          </a>
+        </div>
+        <div class="navbar-menu">
+          <div class="navbar-end">
+            <a
+              href="/"
+              class="navbar-item {{ 'is-active' if request.path == '/' else '' }}"
+            >
+              <span class="icon mr-1"><i class="fa-solid fa-search"></i></span
+              ><span>Wyszukiwarka</span>
+            </a>
+            <a
+              href="/stats"
+              class="navbar-item {{ 'is-active' if request.path == '/stats' else '' }}"
+            >
+              <span class="icon mr-1"
+                ><i class="fa-solid fa-chart-pie"></i></span
+              ><span>Statystyki</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    {% block content %}{% endblock %} {% block scripts %}{% endblock %}
+  </body>
+</html>
