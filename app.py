@@ -18,7 +18,12 @@ from utils.dictionaries import (
     age_map,
     statuses_colors_map,
 )
-from utils.formatters import translate_complex_text, clean_locations, get_sentiment_info
+from utils.formatters import (
+    clean_text,
+    translate_complex_text,
+    clean_locations,
+    get_sentiment_info,
+)
 
 config = {
     "DEBUG": True,
@@ -98,9 +103,11 @@ def index():
         r["Sex"] = translate_complex_text(r.get("Sex", ""), sex_map)
 
         # Oczyszczenie i sformatowanie list
-        r["Conditions"] = translate_complex_text(r.get("Conditions", ""), {})
-        r["Interventions"] = translate_complex_text(r.get("Interventions", ""), {})
+        r["Interventions"] = clean_text(r.get("Interventions", ""))
         r["Locations"] = clean_locations(r.get("Locations", ""))
+        r["Conditions"] = clean_text(r.get("Conditions", ""))
+
+        # Pobranie opisu
         r["Brief Summary"] = r.get("Brief Summary", "") or "Brak szczegółowego opisu"
 
         # Ocenienie badań
@@ -166,7 +173,9 @@ def stats():
         df_time = pd.read_sql('SELECT "Start Date", "Study Type" FROM trials', conn)
         df_time["Start Date"] = pd.to_datetime(df_time["Start Date"], errors="coerce")
         df_time["Year"] = df_time["Start Date"].dt.year
-        df_time["SimpleType"] = df_time["Study Type"].map(lambda x: types_map.get(x, x))
+        df_time["Simple Type"] = df_time["Study Type"].map(
+            lambda x: types_map.get(x, x)
+        )
 
         current_year = pd.Timestamp.now().year
         df_time = df_time[
@@ -180,7 +189,7 @@ def stats():
 
         # Szczegółowe dane
         timeline_details = {}
-        grouped = df_time.groupby(["Year", "SimpleType"]).size().unstack(fill_value=0)
+        grouped = df_time.groupby(["Year", "Simple Type"]).size().unstack(fill_value=0)
 
         for year in timeline_counts.index:
             year_str = str(int(year))

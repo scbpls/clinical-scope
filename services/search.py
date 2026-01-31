@@ -54,7 +54,7 @@ class SearchEngine:
             conn.close()
 
             # Przygotowanie tekstu
-            full_df["Combined_Text"] = (
+            full_df["Combined Text"] = (
                 full_df["Study Title"].fillna("")
                 + " "
                 + full_df["Brief Summary"].fillna("")
@@ -74,7 +74,7 @@ class SearchEngine:
 
             # Generowanie osadzeń
             sentences = [
-                "passage: " + text for text in full_df["Combined_Text"].tolist()
+                "passage: " + text for text in full_df["Combined Text"].tolist()
             ]
             self.matrix = self.model.encode(sentences, convert_to_tensor=True)
             self.df = full_df[["NCT Number"]]
