@@ -2,3 +2,4 @@
 __pycache__/
 cache-directory/
 clinical_trials.db
+*.joblib

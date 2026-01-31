@@ -1,7 +1,10 @@
-pandas
-flask
+Flask
 Flask-Caching
-deep-translator
+pandas
 scikit-learn
+joblib
+torch
+sentence_transformers
 textblob
-TheFuzz
+deep-translator
+thefuzz
