@@ -211,6 +211,17 @@ endblock %} {% block content %}
               <h2 class="title is-4">Wyniki wyszukiwania</h2>
             </div>
           </div>
+          <div class="level-right">
+            <div class="level-item">
+              <a
+                href="{{ url_for('export_csv', **request.args) }}"
+                class="button is-small is-link is-light"
+              >
+                <span class="icon"><i class="fa-solid fa-file-csv"></i></span>
+                <span>Eksportuj do CSV</span>
+              </a>
+            </div>
+          </div>
         </div>
         {% if not trials %}
         <div class="notification is-warning is-light has-text-centered">
