@@ -109,7 +109,7 @@ endblock %} {% block content %}
             <div class="field">
               <label class="label is-small">Płeć uczestników</label>
               <div class="checkbox-container" style="max-height: auto">
-                {% for sex_opt in sexes %} {% if sex_opt|upper != 'ALL' %}
+                {% for sex_opt in sexes %}
                 <label class="checkbox checkbox-label">
                   <input
                     type="checkbox"
@@ -127,7 +127,7 @@ endblock %} {% block content %}
                   />
                   {{ sex_map.get(sex_opt, sex_opt) }}
                 </label>
-                {% endif %} {% endfor %}
+                {% endfor %}
               </div>
             </div>
             <div class="field">
