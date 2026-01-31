@@ -21,17 +21,31 @@ endblock %} {% block content %}
           <form action="/" method="get">
             <div class="field">
               <label class="label is-small">Słowa kluczowe</label>
-              <div class="control has-icons-left">
+              <div class="control has-icons-left has-icons-right">
                 <input
+                  id="search-input"
                   class="input is-small"
                   type="text"
                   name="q"
                   placeholder="np. Cancer..."
                   value="{{ current_q }}"
                 />
-                <span class="icon is-small is-left"
-                  ><i class="fa-solid fa-robot"></i
-                ></span>
+                <span class="icon is-small is-left">
+                  <i class="fa-solid fa-robot"></i>
+                </span>
+                {% if current_q %}
+                <span
+                  class="icon is-small is-right is-clickable"
+                  onclick="clearSearch()"
+                  style="
+                    pointer-events: all;
+                    cursor: pointer;
+                    color: var(--text-light) !important;
+                  "
+                >
+                  <i class="fa-solid fa-circle-xmark"></i>
+                </span>
+                {% endif %}
               </div>
               {% if suggestion %}
               <p class="is-size-7 mt-1 ml-1">
@@ -383,6 +397,14 @@ endblock %} {% block content %}
 </section>
 {% endblock %} {% block scripts %}
 <script>
+  function clearSearch() {
+    const input = document.getElementById('search-input');
+
+    input.value = '';
+
+    window.location.href = window.location.pathname;
+  }
+
   function toggleSummary(btn) {
     const content = btn.nextElementSibling;
     const icon =
