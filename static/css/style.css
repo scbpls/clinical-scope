@@ -9,6 +9,7 @@
 
   /* Kolory semantyczne */
   --color-success: #3ac069;
+  --color-success-hover: #20a74f;
   --color-info: #325adc;
   --color-warning: #f7d346;
   --color-danger: #e73e60;
@@ -250,13 +251,14 @@ body {
 .button.is-ghost {
   color: var(--primary-color) !important;
   text-decoration: none;
+  background-color: transparent !important;
   transition: color 0.2s ease;
 }
 
 .button.is-ghost:hover {
   color: var(--primary-hover) !important;
-  background-color: transparent !important;
   text-decoration: underline;
+  background-color: transparent !important;
 }
 
 /* Przyciski typu "full" */
@@ -272,6 +274,10 @@ body {
 .button.is-link:hover,
 .button.is-info:hover {
   background-color: var(--primary-hover) !important;
+}
+
+.button.is-loading > * {
+  visibility: hidden !important;
 }
 
 /* Tagi */
@@ -305,8 +311,15 @@ body {
   color: var(--color-white) !important;
 }
 
-/* Tłumaczenie*/
+/* Tłumaczenie */
 .translate-card-btn.is-active {
   color: var(--color-success) !important;
   text-decoration: none !important;
+  background-color: transparent !important;
+}
+
+.translate-card-btn.is-active:hover {
+  color: var(--color-success-hover) !important;
+  text-decoration: underline !important;
+  background-color: transparent !important;
 }
