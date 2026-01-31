@@ -46,15 +46,28 @@
       </div>
       <div class="column is-7">
         <div class="box stat-card">
-          <h3 class="title is-6 has-text-centered">
-            Najpopularniejsze choroby
-          </h3>
+          <div style="position: relative; margin-bottom: 1rem">
+            <button
+              class="button is-small is-ghost translate-chart-btn"
+              onclick="translateConditions(this)"
+              title="Przetłumacz na polski"
+              style="
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 10;
+              "
+            >
+              <span class="icon"><i class="fa-solid fa-language"></i></span>
+            </button>
+            <h3 class="title is-6 has-text-centered m-0">
+              Najczęściej badane schorzenia
+            </h3>
+          </div>
           <div class="chart-container" style="height: 350px">
             <canvas id="conditionsChart"></canvas>
           </div>
-          <p class="content is-small has-text-grey has-text-centered mt-2">
-            Najczęściej występujące schorzenia
-          </p>
         </div>
       </div>
     </div>
@@ -196,7 +209,7 @@
       labels: chartData.enrollmentLabels,
       datasets: [
         {
-          label: 'Liczba grup badawczych',
+          // label: 'Liczba grup badawczych',
           data: chartData.enrollmentValues,
           backgroundColor: [
             getColor('--color-info'),
@@ -218,40 +231,125 @@
             padding: 20,
           },
         },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const label = context.label || '';
+              const value = context.raw || 0;
+
+              const dataset = context.dataset;
+              const total = dataset.data.reduce((acc, curr) => acc + curr, 0);
+              const percentage = ((value / total) * 100).toFixed(2);
+
+              return `Liczba grup badawczych: ${value} (${percentage}%)`;
+            },
+          },
+        },
       },
     },
   });
 
-  // 4. Wykres: Najpopularniejsze choroby
-  new Chart(document.getElementById('conditionsChart'), {
-    type: 'bar',
-    data: {
-      labels: chartData.conditionsLabels,
-      datasets: [
-        {
-          label: 'Liczba badań',
-          data: chartData.conditionsValues,
-          backgroundColor: getColor('--primary-color'),
-          borderRadius: 4,
-        },
-      ],
-    },
-    options: {
-      indexAxis: 'y',
-      maintainAspectRatio: false,
-      scales: {
-        x: { beginAtZero: true },
-        y: {
-          ticks: {
-            autoSkip: false,
-            font: { size: 11 },
+  // 4. Wykres: Najczęściej badane schorzenia
+  window.conditionsChart = new Chart(
+    document.getElementById('conditionsChart'),
+    {
+      type: 'bar',
+      data: {
+        labels: chartData.conditionsLabels,
+        datasets: [
+          {
+            label: 'Liczba badań',
+            data: chartData.conditionsValues,
+            backgroundColor: getColor('--primary-color'),
+            borderRadius: 4,
+          },
+        ],
+      },
+      options: {
+        indexAxis: 'y',
+        maintainAspectRatio: false,
+        scales: {
+          x: { beginAtZero: true },
+          y: {
+            ticks: {
+              autoSkip: false,
+              font: { size: 11 },
+            },
           },
         },
-      },
-      plugins: {
-        legend: { display: false },
+        plugins: {
+          legend: { display: false },
+        },
       },
     },
-  });
+  );
+
+  function translateConditions(btn) {
+    const chart = window.conditionsChart;
+
+    if (!chart) return;
+
+    // PL -> EN
+    if (btn.classList.contains('is-active')) {
+      chart.data.labels = JSON.parse(btn.dataset.original);
+      chart.update();
+
+      btn.classList.remove('is-active');
+      btn.dataset.state = 'original';
+      return;
+    }
+
+    // EN -> PL
+    if (btn.dataset.cached) {
+      chart.data.labels = JSON.parse(btn.dataset.cached);
+      chart.update();
+
+      btn.classList.add('is-active');
+      btn.dataset.state = 'translated';
+      return;
+    }
+
+    const labels = chart.data.labels;
+
+    if (!btn.dataset.original) {
+      btn.dataset.original = JSON.stringify(labels);
+    }
+
+    const batch = {};
+    labels.forEach((label, index) => {
+      batch[`l_${index}`] = label;
+    });
+
+    btn.classList.add('is-loading');
+
+    fetch('/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ batch: batch }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        btn.classList.remove('is-loading');
+
+        if (data.translated_batch) {
+          const newLabels = labels.map(
+            (_, index) => data.translated_batch[`l_${index}`] || labels[index],
+          );
+
+          btn.dataset.cached = JSON.stringify(newLabels);
+
+          chart.data.labels = newLabels;
+          chart.update();
+
+          btn.classList.add('is-active');
+          btn.dataset.state = 'translated';
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        btn.classList.remove('is-loading');
+        alert('Nie udało się przetłumaczyć wykresu.');
+      });
+  }
 </script>
 {% endblock %}
