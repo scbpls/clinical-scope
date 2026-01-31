@@ -43,7 +43,7 @@ body {
   background-color: var(--bg-body);
   color: var(--text-main);
   min-height: 100vh;
-  padding-top: 4rem;
+  padding-top: 3.5rem;
 }
 
 /* NAWIGACJA */
@@ -96,9 +96,20 @@ body {
 /* PASEK BOCZNY */
 .sidebar-sticky {
   position: sticky;
-  top: 5.5rem;
+  top: 4.5rem;
   background-color: var(--bg-card);
   border: 1px solid var(--border-light);
+  max-height: calc(100vh - 5.5rem);
+  overflow-y: auto;
+}
+
+.sidebar-sticky::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-sticky::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
 }
 
 /* FILTRY */
@@ -240,6 +251,11 @@ input[type='checkbox'] {
 }
 
 /* WYMUSZENIA */
+/* Sekcja */
+.section {
+  padding-top: 1.5rem !important;
+}
+
 /* Pomocnicze klasy tekstowe */
 .has-text-primary {
   color: var(--primary-color) !important;
