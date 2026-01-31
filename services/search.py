@@ -6,20 +6,24 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 from thefuzz import process, fuzz
 
-DATABASE = "clinical_trials.db"
+DATABASE = os.path.join("instance", "clinical_trials.db")
 
 
 class SearchEngine:
     def __init__(self):
-        self.matrix_path = "embeddings_matrix.joblib"
-        self.conditions_path = "unique_conditions.joblib"
+        self.models_dir = "models"
+        self.matrix_path = os.path.join(self.models_dir, "embeddings_matrix.joblib")
+        self.conditions_path = os.path.join(self.models_dir, "unique_conditions.joblib")
 
-        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        if not os.path.exists(self.models_dir):
+            os.makedirs(self.models_dir)
+
+        self.model = SentenceTransformer("intfloat/multilingual-e5-small")
         self.matrix = None
         self.df = None
         self.unique_conditions = []
 
-        print("Inicjalizacja silnika wyszukiwania semantycznego...")
+        print("Inicjalizowanie silnika wyszukiwania semantycznego...")
         self._load_and_train()
         print("Silnik gotowy!")
 
@@ -69,7 +73,9 @@ class SearchEngine:
             )
 
             # Generowanie osadzeń
-            sentences = full_df["Combined_Text"].tolist()
+            sentences = [
+                "passage: " + text for text in full_df["Combined_Text"].tolist()
+            ]
             self.matrix = self.model.encode(sentences, convert_to_tensor=True)
             self.df = full_df[["NCT Number"]]
 
@@ -88,7 +94,8 @@ class SearchEngine:
 
         try:
             # Zwektoryzowanie zapytania
-            query_vec = self.model.encode(query_text, convert_to_tensor=True)
+            query_with_prefix = f"query: {query_text}"
+            query_vec = self.model.encode(query_with_prefix, convert_to_tensor=True)
 
             # Obliczenie podobieństwa cosinusowego
             cosine_scores = util.cos_sim(query_vec, self.matrix)[0]

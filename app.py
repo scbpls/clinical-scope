@@ -3,13 +3,13 @@ from flask import Flask, render_template, url_for, make_response, request
 from flask_caching import Cache
 from deep_translator import GoogleTranslator
 
-from database import (
+from services.database import (
     get_db,
     close_connection,
     fetch_trials_paginated,
     fetch_unique_options,
 )
-from search import search_engine
+from services.search import search_engine
 from utils.dictionaries import (
     phases_map,
     statuses_map,
