@@ -239,7 +239,7 @@ def stats():
     except Exception:
         enrollment_values = [0, 0, 0]
 
-    # 4. Wykres: Najpopularniejsze choroby
+    # 4. Wykres: Najczęściej badane schorzenia
     try:
         df_conditions = pd.read_sql("SELECT Conditions FROM trials", conn)
         top_conditions = (

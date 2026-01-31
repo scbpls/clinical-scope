@@ -338,3 +338,27 @@ input[type='checkbox'] {
   text-decoration: underline !important;
   background-color: transparent !important;
 }
+
+.translate-chart-btn {
+  transition: all 0.2s ease;
+  color: var(--primary-color) !important;
+}
+
+.translate-chart-btn:hover {
+  color: var(--primary-hover) !important;
+  text-decoration: underline;
+}
+
+.translate-chart-btn.is-active {
+  color: var(--color-success) !important;
+}
+
+.translate-chart-btn.is-active:hover {
+  color: var(--color-success-hover) !important;
+  text-decoration: underline;
+}
+
+.translate-chart-btn .icon {
+  color: inherit !important;
+  transition: color 0.2s ease;
+}
