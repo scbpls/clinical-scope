@@ -1,6 +1,24 @@
 from textblob import TextBlob
 
 
+def clean_text(text):
+    """Czyści surowy tekst z separatorów i podkreślników"""
+    if not text:
+        return ""
+
+    text = text.replace("_", " ")
+
+    separators = ["|", "/"]
+
+    for sep in separators:
+        if sep in text:
+            parts = [p.strip() for p in text.split(sep) if p.strip()]
+
+            text = ", ".join(parts)
+
+    return text
+
+
 def translate_complex_text(text, mapping):
     """Tłumaczy tekst używając mapowania, zachowując separatory"""
     if not text:
@@ -10,11 +28,11 @@ def translate_complex_text(text, mapping):
         return mapping[text]
 
     separators = ["|", "/", ","]
+
     for sep in separators:
         if sep in text:
             parts = text.split(sep)
 
-            # Przetłumaczenie każdego kawałka osobno
             translated_parts = [
                 mapping.get(p.strip(), p.strip()) for p in parts if p.strip()
             ]
