@@ -87,7 +87,7 @@ class SearchEngine:
             print(f"Błąd podczas generowania osadzeń: {e}")
             self.df = pd.DataFrame()
 
-    def get_relevant_ids(self, query_text, top_n=50):
+    def get_relevant_ids(self, query_text, top_n=100):
         """Wyszukiwanie semantyczne (miara cosinusowa)"""
         if not query_text or self.matrix is None:
             return []
