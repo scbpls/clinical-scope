@@ -60,17 +60,21 @@ def index():
     per_page = 20
     query_text = request.args.get("q", "")
 
+    suggestion = None
+    if query_text:
+        suggestion = search_engine.get_suggestion(query_text)
+
     # Zebranie filtrów w słownik
     filters = {
         "q": query_text,
         "status": request.args.getlist("status"),
         "phase": request.args.getlist("phase"),
         "type": request.args.getlist("type"),
-        "sex": request.args.getlist("sex"),
         "age": request.args.getlist("age"),
+        "sex": request.args.getlist("sex"),
     }
 
-    # Wyszukiwarka AI dla tekstów
+    # Wyszukiwarka dla tekstów
     matching_ids = search_engine.get_relevant_ids(query_text) if query_text else []
 
     # Pobranie danych z bazy
@@ -97,9 +101,9 @@ def index():
         r["Conditions"] = translate_complex_text(r.get("Conditions", ""), {})
         r["Interventions"] = translate_complex_text(r.get("Interventions", ""), {})
         r["Locations"] = clean_locations(r.get("Locations", ""))
-        r["Brief Summary"] = r.get("Brief Summary", "") or "Brak szczegółowego opisu."
+        r["Brief Summary"] = r.get("Brief Summary", "") or "Brak szczegółowego opisu"
 
-        #
+        # Ocenienie badania
         r["Sentiment"] = get_sentiment_info(r.get("Brief Summary", ""))
 
         trials.append(r)
@@ -131,6 +135,7 @@ def index():
         types=types_raw,
         ages=age_raw,
         sexes=sex_raw,
+        suggestion=suggestion,
         current_q=query_text,
         current_status=filters["status"],
         current_phase=filters["phase"],

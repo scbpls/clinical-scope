@@ -20,7 +20,7 @@ endblock %} {% block content %}
           </p>
           <form action="/" method="get">
             <div class="field">
-              <label class="label is-small">Słowa kluczowe (AI)</label>
+              <label class="label is-small">Słowa kluczowe</label>
               <div class="control has-icons-left">
                 <input
                   class="input is-small"
@@ -33,6 +33,21 @@ endblock %} {% block content %}
                   ><i class="fa-solid fa-robot"></i
                 ></span>
               </div>
+              {% if suggestion %}
+              <p class="is-size-7 mt-1 ml-1">
+                <span class="has-text-grey">Czy miałeś na myśli</span>
+                <a
+                  href="{{ url_replace(q=suggestion, page=1) }}"
+                  style="
+                    color: var(--primary-color);
+                    font-weight: 700;
+                    text-decoration: underline;
+                  "
+                >
+                  {{ suggestion }}</a
+                >?
+              </p>
+              {% endif %}
             </div>
             <div class="field">
               <label class="label is-small">Status</label>
@@ -227,10 +242,7 @@ endblock %} {% block content %}
                 </div>
                 <div class="tags mb-2">
                   {% if trial['Sentiment'] %}
-                  <span
-                    class="tag {{ trial['Sentiment']['class'] }}"
-                    title="Analiza wydźwięku opisu (AI)"
-                  >
+                  <span class="tag {{ trial['Sentiment']['class'] }}">
                     <span class="icon is-small mr-1">
                       <i class="fa-solid {{ trial['Sentiment']['icon'] }}"></i>
                     </span>
