@@ -1,6 +1,6 @@
 import sqlite3
-import pandas as pd
 import math
+import pandas as pd
 from flask import g
 
 DATABASE = "clinical_trials.db"

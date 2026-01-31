@@ -1,5 +1,5 @@
-import pandas as pd
 import sqlite3
+import pandas as pd
 
 # Wczytanie danych
 df1 = pd.read_csv("data/cancer.csv")
