@@ -112,5 +112,6 @@ clinical-scope/
 │   └── formatters.py            # Formatory danych
 ├── app.py                       # Serce aplikacji, obsługa tras i pamięci podręcznej
 ├── init_db.py                   # Skrypt inicjalizujący bazę danych
+├── README.md                    # Dokumentacja projektu
 └── requirements.txt             # Lista zależności projektu
 ```
