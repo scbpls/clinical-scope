@@ -4,3 +4,4 @@ Flask-Caching
 deep-translator
 scikit-learn
 textblob
+TheFuzz
