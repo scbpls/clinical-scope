@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, url_for
 import pandas as pd
+from flask import Flask, render_template, request, url_for
+from flask_caching import Cache
 from deep_translator import GoogleTranslator
 
 from database import (
@@ -19,7 +20,16 @@ from utils.dictionaries import (
 )
 from utils.formatters import translate_complex_text, clean_locations
 
+config = {
+    "DEBUG": True,
+    "CACHE_TYPE": "FileSystemCache",
+    "CACHE_DIR": "cache-directory",
+    "CACHE_DEFAULT_TIMEOUT": 300,
+}
+
 app = Flask(__name__)
+app.config.from_mapping(config)
+cache = Cache(app)
 
 app.teardown_appcontext(close_connection)
 
@@ -41,6 +51,7 @@ def utility_processor():
 
 
 @app.route("/")
+@cache.cached(timeout=60, query_string=True)
 def index():
     conn = get_db()
 
@@ -135,6 +146,7 @@ def index():
 
 
 @app.route("/stats")
+@cache.cached(timeout=600)
 def stats():
     conn = get_db()
 
@@ -240,6 +252,7 @@ def stats():
 
 
 @app.route("/translate", methods=["POST"])
+@cache.cached(timeout=3600, make_cache_key=lambda: str(request.get_json()))
 def translate_text():
     """Tłumaczy tekst z karty"""
     data = request.get_json()
