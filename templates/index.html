@@ -278,10 +278,13 @@ endblock %} {% block content %}
                 </div>
                 <div class="mb-3 is-size-7">
                   {% if trial['Interventions'] %}
-                  <div class="icon-text mb-1">
-                    <span class="icon has-text-success"
-                      ><i class="fa-solid fa-pills"></i
-                    ></span>
+                  <div class="is-flex is-align-items-flex-start mb-1">
+                    <span
+                      class="icon has-text-success mr-2"
+                      style="flex-shrink: 0"
+                    >
+                      <i class="fa-solid fa-pills"></i>
+                    </span>
                     <span>
                       <strong>Interwencje:</strong>
                       <span class="text-interventions"
@@ -290,10 +293,13 @@ endblock %} {% block content %}
                     </span>
                   </div>
                   {% endif %} {% if trial['Locations'] %}
-                  <div class="icon-text">
-                    <span class="icon has-text-danger"
-                      ><i class="fa-solid fa-map-marker-alt"></i
-                    ></span>
+                  <div class="is-flex is-align-items-flex-start">
+                    <span
+                      class="icon has-text-danger mr-2"
+                      style="flex-shrink: 0"
+                    >
+                      <i class="fa-solid fa-map-marker-alt"></i>
+                    </span>
                     <span>
                       <strong>Lokalizacja:</strong>
                       <span class="text-locations"
