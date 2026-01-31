@@ -103,15 +103,14 @@ def index():
         r["Locations"] = clean_locations(r.get("Locations", ""))
         r["Brief Summary"] = r.get("Brief Summary", "") or "Brak szczegółowego opisu"
 
-        # Ocenienie badania
+        # Ocenienie badań
         r["Sentiment"] = get_sentiment_info(r.get("Brief Summary", ""))
 
         trials.append(r)
 
-    # Pobranie opcji do filtrów
+    # Posortowanie statusów
     statuses_raw = fetch_unique_options(conn, "Study Status")
-    types_raw = fetch_unique_options(conn, "Study Type")
-    sex_raw = fetch_unique_options(conn, "Sex")
+    statuses_raw = sorted(statuses_raw, key=lambda x: statuses_map.get(x, x).lower())
 
     # Rozdzielenie opcji dla faz
     raw_phases = fetch_unique_options(conn, "Phases")
@@ -123,6 +122,10 @@ def index():
                 unique_phases.add(part.strip())
 
     phases_raw = sorted(list(unique_phases))
+
+    # Pobranie pozostałych filtrów
+    types_raw = fetch_unique_options(conn, "Study Type")
+    sex_raw = fetch_unique_options(conn, "Sex")
 
     # Opcje wieków
     age_raw = ["CHILD", "ADULT", "OLDER_ADULT"]
