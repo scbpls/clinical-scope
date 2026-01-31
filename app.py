@@ -1,5 +1,5 @@
 import pandas as pd
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, url_for, make_response, request
 from flask_caching import Cache
 from deep_translator import GoogleTranslator
 
@@ -55,16 +55,16 @@ def utility_processor():
 def index():
     conn = get_db()
 
-    # Parametry
+    # Główne parametry
+    query_text = request.args.get("q", "")
     page = request.args.get("page", 1, type=int)
     per_page = 20
-    query_text = request.args.get("q", "")
 
     suggestion = None
     if query_text:
         suggestion = search_engine.get_suggestion(query_text)
 
-    # Zebranie filtrów w słownik
+    # Filtry
     filters = {
         "q": query_text,
         "status": request.args.getlist("status"),
@@ -285,6 +285,51 @@ def translate_text():
         return {"translated_batch": results}
 
     return {"error": "Błędne dane"}, 400
+
+
+@app.route("/export_csv")
+def export_csv():
+    conn = get_db()
+
+    # Główne parametry
+    page = request.args.get("page", 1, type=int)
+    per_page = 20
+    query_text = request.args.get("q", "")
+
+    # Filtry
+    filters = {
+        "q": query_text,
+        "status": request.args.getlist("status"),
+        "phase": request.args.getlist("phase"),
+        "type": request.args.getlist("type"),
+        "age": request.args.getlist("age"),
+        "sex": request.args.getlist("sex"),
+    }
+
+    # Pobranie identycznego ID
+    matching_ids = search_engine.get_relevant_ids(query_text) if query_text else []
+
+    # Pobranie bieżącej strony
+    trials_data, _, _ = fetch_trials_paginated(
+        conn, filters, matching_ids, page, per_page
+    )
+
+    if not trials_data:
+        return "Brak danych do eksportu", 404
+
+    # Stworzenie ramki danych
+    df = pd.DataFrame(trials_data)
+
+    # Wygenerowanie pliku CSV
+    csv_data = df.to_csv(index=False, encoding="utf-8-sig")
+
+    response = make_response(csv_data)
+    response.headers["Content-Disposition"] = (
+        f"attachment; filename=clinical_trials_page_{page}.csv"
+    )
+    response.headers["Content-type"] = "text/csv"
+
+    return response
 
 
 if __name__ == "__main__":
