@@ -226,14 +226,24 @@ endblock %} {% block content %}
                   </div>
                 </div>
                 <div class="tags mb-2">
-                  {% if trial['Phases'] %}
-                  <span class="tag is-info is-light"
-                    >{{ trial['Phases'] }}</span
+                  {% if trial['Sentiment'] %}
+                  <span
+                    class="tag {{ trial['Sentiment']['class'] }}"
+                    title="Analiza wydźwięku opisu (AI)"
                   >
+                    <span class="icon is-small mr-1">
+                      <i class="fa-solid {{ trial['Sentiment']['icon'] }}"></i>
+                    </span>
+                    {{ trial['Sentiment']['label'] }}
+                  </span>
                   {% endif %} {% if trial['Study Status'] %}
                   <span class="tag {{ get_status_class(trial['Status Key']) }}">
                     {{ trial['Study Status'] }}
                   </span>
+                  {% endif %} {% if trial['Phases'] %}
+                  <span class="tag is-info is-light"
+                    >{{ trial['Phases'] }}</span
+                  >
                   {% endif %} {% if trial['Study Type'] %}
                   <span class="tag is-white border-grey"
                     >{{ trial['Study Type'] }}</span

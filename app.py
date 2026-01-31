@@ -18,7 +18,7 @@ from utils.dictionaries import (
     age_map,
     statuses_colors_map,
 )
-from utils.formatters import translate_complex_text, clean_locations
+from utils.formatters import translate_complex_text, clean_locations, get_sentiment_info
 
 config = {
     "DEBUG": True,
@@ -98,6 +98,8 @@ def index():
         r["Interventions"] = translate_complex_text(r.get("Interventions", ""), {})
         r["Locations"] = clean_locations(r.get("Locations", ""))
         r["Brief Summary"] = r.get("Brief Summary", "") or "Brak szczegółowego opisu."
+
+        r["Sentiment"] = get_sentiment_info(r.get("Brief Summary", ""))
 
         trials.append(r)
 

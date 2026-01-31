@@ -1,3 +1,6 @@
+from textblob import TextBlob
+
+
 def translate_complex_text(text, mapping):
     """Tłumaczy tekst używając mapowania, zachowując separatory"""
     if not text:
@@ -22,7 +25,7 @@ def translate_complex_text(text, mapping):
 
 
 def clean_locations(text):
-    """Wyciąga nazwy krajów z lokalizacji"""
+    """Wyciąga nazwy lokalizacji"""
     if not text:
         return ""
 
@@ -47,3 +50,31 @@ def clean_locations(text):
         return text[:100] + "..." if len(text) > 100 else text
 
     return ", ".join(sorted(list(unique_countries)))
+
+
+def get_sentiment_info(text):
+    """Analizuje wydźwięk tekstu"""
+    if not text or len(text) < 10:
+        return {"label": "Neutralny", "class": "is-light", "icon": "fa-minus"}
+
+    analysis = TextBlob(text)
+    score = analysis.sentiment.polarity  # od -1.0 (negatywny) do 1.0 (pozytywny)
+
+    if score > 0.1:
+        return {
+            "label": "Obiecujący",
+            "class": "is-success is-light",
+            "icon": "fa-face-smile",
+        }
+    elif score < -0.1:
+        return {
+            "label": "Wymaga uwagi",
+            "class": "is-danger is-light",
+            "icon": "fa-triangle-exclamation",
+        }
+    else:
+        return {
+            "label": "Neutralny",
+            "class": "is-white border-grey",
+            "icon": "fa-circle-info",
+        }
