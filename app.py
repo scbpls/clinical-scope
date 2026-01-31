@@ -90,8 +90,8 @@ def index():
             r.get("Study Status", ""), statuses_map
         )
         r["Study Type"] = translate_complex_text(r.get("Study Type", ""), types_map)
-        r["Sex"] = translate_complex_text(r.get("Sex", ""), sex_map)
         r["Age"] = translate_complex_text(r.get("Age", ""), age_map)
+        r["Sex"] = translate_complex_text(r.get("Sex", ""), sex_map)
 
         # Oczyszczenie i sformatowanie list
         r["Conditions"] = translate_complex_text(r.get("Conditions", ""), {})
@@ -99,6 +99,7 @@ def index():
         r["Locations"] = clean_locations(r.get("Locations", ""))
         r["Brief Summary"] = r.get("Brief Summary", "") or "Brak szczegółowego opisu."
 
+        #
         r["Sentiment"] = get_sentiment_info(r.get("Brief Summary", ""))
 
         trials.append(r)
@@ -128,19 +129,19 @@ def index():
         statuses=statuses_raw,
         phases=phases_raw,
         types=types_raw,
-        sexes=sex_raw,
         ages=age_raw,
+        sexes=sex_raw,
         current_q=query_text,
         current_status=filters["status"],
         current_phase=filters["phase"],
         current_type=filters["type"],
-        current_sex=filters["sex"],
         current_age=filters["age"],
-        phases_map=phases_map,
+        current_sex=filters["sex"],
         statuses_map=statuses_map,
-        sex_map=sex_map,
+        phases_map=phases_map,
         types_map=types_map,
         age_map=age_map,
+        sex_map=sex_map,
         page=page,
         total_pages=total_pages,
         total_results=total_results,

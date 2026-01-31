@@ -107,30 +107,6 @@ endblock %} {% block content %}
               </div>
             </div>
             <div class="field">
-              <label class="label is-small">Płeć uczestników</label>
-              <div class="checkbox-container" style="max-height: auto">
-                {% for sex_opt in sexes %}
-                <label class="checkbox checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="sex"
-                    value="{{ sex_opt }}"
-                    onchange="this.form.submit()"
-                    {%
-                    if
-                    sex_opt
-                    in
-                    current_sex
-                    %}checked{%
-                    endif
-                    %}
-                  />
-                  {{ sex_map.get(sex_opt, sex_opt) }}
-                </label>
-                {% endfor %}
-              </div>
-            </div>
-            <div class="field">
               <label class="label is-small">Grupa wiekowa</label>
               <div class="checkbox-container" style="max-height: auto">
                 {% for age_opt in ages %}
@@ -150,6 +126,30 @@ endblock %} {% block content %}
                     %}
                   />
                   {{ age_map.get(age_opt, age_opt) }}
+                </label>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="field">
+              <label class="label is-small">Płeć uczestników</label>
+              <div class="checkbox-container" style="max-height: auto">
+                {% for sex_opt in sexes %}
+                <label class="checkbox checkbox-label">
+                  <input
+                    type="checkbox"
+                    name="sex"
+                    value="{{ sex_opt }}"
+                    onchange="this.form.submit()"
+                    {%
+                    if
+                    sex_opt
+                    in
+                    current_sex
+                    %}checked{%
+                    endif
+                    %}
+                  />
+                  {{ sex_map.get(sex_opt, sex_opt) }}
                 </label>
                 {% endfor %}
               </div>
@@ -284,18 +284,18 @@ endblock %} {% block content %}
                   <div class="column">
                     <span class="icon-text mr-3">
                       <span class="icon has-text-info"
-                        ><i class="fa-solid fa-venus-mars"></i
-                      ></span>
-                      <span class="has-text-grey-dark ml-1"
-                        >{{ trial['Sex'] }}</span
-                      >
-                    </span>
-                    <span class="icon-text">
-                      <span class="icon has-text-info"
                         ><i class="fa-solid fa-child"></i
                       ></span>
                       <span class="has-text-grey-dark ml-1"
                         >{{ trial['Age'] }}</span
+                      >
+                    </span>
+                    <span class="icon-text">
+                      <span class="icon has-text-info"
+                        ><i class="fa-solid fa-venus-mars"></i
+                      ></span>
+                      <span class="has-text-grey-dark ml-1"
+                        >{{ trial['Sex'] }}</span
                       >
                     </span>
                   </div>

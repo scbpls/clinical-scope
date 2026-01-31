@@ -1,11 +1,3 @@
-phases_map = {
-    "EARLY_PHASE1": "Wczesna faza 1",
-    "PHASE1": "Faza 1",
-    "PHASE2": "Faza 2",
-    "PHASE3": "Faza 3",
-    "PHASE4": "Faza 4",
-}
-
 statuses_map = {
     "ACTIVE_NOT_RECRUITING": "Aktywne (zamknięta)",
     "APPROVED_FOR_MARKETING": "Zatwierdzone do obrotu",
@@ -22,7 +14,13 @@ statuses_map = {
     "WITHDRAWN": "Wycofane",
 }
 
-sex_map = {"ALL": "Wszystkie", "FEMALE": "Kobiety", "MALE": "Mężczyźni"}
+phases_map = {
+    "EARLY_PHASE1": "Wczesna faza 1",
+    "PHASE1": "Faza 1",
+    "PHASE2": "Faza 2",
+    "PHASE3": "Faza 3",
+    "PHASE4": "Faza 4",
+}
 
 types_map = {
     "EXPANDED_ACCESS": "Rozszerzony dostęp",
@@ -31,6 +29,8 @@ types_map = {
 }
 
 age_map = {"CHILD": "Dzieci", "ADULT": "Dorośli", "OLDER_ADULT": "Seniorzy"}
+
+sex_map = {"ALL": "Wszystkie", "FEMALE": "Kobiety", "MALE": "Mężczyźni"}
 
 statuses_colors_map = {
     # Pozytywne
