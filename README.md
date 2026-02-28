@@ -1,10 +1,10 @@
-# ClinicalScope - Inteligentna wyszukiwarka badań klinicznych
+# ClinicalScope - Intelligent clinical trials search engine
 
-Aplikacja webowa służąca do semantycznego przeszukiwania baz danych badań klinicznych (nowotwory, cukrzyca, choroby serca)
+A web application for semantic search of clinical trials databases (cancer, diabetes, heart diseases)
 
-## 1. Konfiguracja
+## 1. Configuration
 
-### 1.1 Przygotowanie środowiska
+### 1.1 Environment setup
 
 ```bash
 python -m venv .venv
@@ -13,105 +13,106 @@ source .venv/bin/activate # Linux/macOS
 pip install -r requirements.txt
 ```
 
-### 1.2. Inicjalizacja bazy danych i modeli
+### 1.2. Database and models initialization
 
 ```bash
-# Wczytanie danych z plików CSV do bazy danych w folderze /instance
+# Load data from CSV files into the database in the /instance folder
 python init_db.py
 
-# Pierwszy start wygeneruje modele osadzeń w folderze /models
+# The first start will generate embedding models in the /models folder
 python app.py
 ```
 
-### 1.3. Uruchomienie
+### 1.3. Running
 
-Aplikacja będzie dostępna pod adresem: http://127.0.0.1:5000
+The application will be available at: http://127.0.0.1:5000
 
-## 2. Technologie
+## 2. Technologies
 
 - **Backend**:
-  - **Flask** - Serwer aplikacji i obsługa logiki
-  - **Flask-Caching** - Optymalizacja wydajności poprzez buforowanie wyników wyszukiwania, tłumaczeń i statystyk
+  - **Flask** - Application server and logic handling
+  - **Flask-Caching** - Performance optimization through caching of search results, translations and statistics
 
 - **Baza danych**:
-  - **SQLite** - Relacyjna baza danych przechowująca ponad 25 000 rekordów.
+  - **SQLite** - Relational database storing over 160,000 records
 
 - **Silniki danych**:
-  - `intfloat/multilingual-e5-small` - Modedl o generowania osadzeń semantycznych
-  - **TextBlob** - Analiza polaryzacji tekstu w celu wyznaczenia sentymentu badań
-  - **TheFuzz** - Implementacja algorytmu odległości Levenshteina do korekty literówek zapytań
-  - **Google Translate API** (`deep-translator`) - Obsługa wielojęzyczności wyników
+  - `intfloat/multilingual-e5-small` - Model for generating semantic embeddings
+  - **TextBlob** - Text polarity analysis to determine trial sentiment
+  - **TheFuzz** - Implementation of the Levenshtein distance algorithm to correct query typos
+  - **Google Translate API** (`deep-translator`) - Multilingual results support
 
 - **Frontend**:
-  - **Bulma CSS** - Responsywna biblioteka UI
-  - **Chart.js** - Interaktywne wizualizacje danych z obsługą wtyczek zoom i pan
-  - **FontAwesome** - Ikony
+  - **Bulma CSS** - Responsive UI library
+  - **Chart.js** - Interactive data visualizations with zoom and pan plugin support
+  - **FontAwesome** - Icons
 
-## 3. Spełnione kryteria projektowe (133 pkt)
+## 3. Key features
 
-### Architektura i dane (47 pkt)
+### Architecture and data
 
-| Kryterium            | Opis techniczny                                                                                            | Punkty |
-| :------------------- | :--------------------------------------------------------------------------------------------------------- | :----- |
-| **Aplikacja webowa** | Implementacja backendu w oparciu o framework **Flask**                                                     | 15 pkt |
-| **Baza danych**      | Przechowywanie ponad **25 000 rekordów** w relacyjnej bazie **SQLite**                                     | 20 pkt |
-| **Źródła danych**    | Pobranie danych z oficjalnego repozytorium **ClinicalTrials.gov**                                          | 5 pkt  |
-| **Cechy rekordów**   | Przetwarzanie **18 unikatowych cech** (13 z głównego źródła danych + 5 wygenerowanych dynamicznie)         | 4 pkt  |
-| **Jakość danych**    | Tworzenie ulepszonego pola do wyszukiwania, normalizacja lokalizacji oraz wygenerowanie etykiet sentymentu | 3 pkt  |
+| Feature             | Technical description                                                                      |
+| :------------------ | :----------------------------------------------------------------------------------------- |
+| **Web application** | Backend implementation based on the **Flask** framework                                    |
+| **Database**        | Storing over **160,000 records** in a relational **SQLite** database                       |
+| **Data sources**    | Fetching data from the official **ClinicalTrials.gov** repository                          |
+| **Record features** | Processing **18 unique features** (13 from the main data source + 5 dynamically generated) |
+| **Data quality**    | Creating an enhanced search field, normalizing locations and generating sentiment labels   |
 
-### Wyszukiwanie (31 pkt)
+### Search
 
-| Kryterium                | Metodologia                                                                                                        | Punkty |
-| :----------------------- | :----------------------------------------------------------------------------------------------------------------- | :----- |
-| **Nadawanie wag termom** | Wykorzystanie osadzeń (**embeddings**) modelu E5 oraz trwały **zapis wektorów** do plików `.joblib`                | 15 pkt |
-| **Podobieństwo zapytań** | Ocena relewancji z wykorzystaniem **miary cosinusowej**                                                            | 5 pkt  |
-| **Korekta błędów**       | Implementacja **odległości Levenshteina** do proponowania korekt w nazwach schorzeń                                | 5 pkt  |
-| **Filtrowanie**          | Wykorzystanie **6 filtrów** (słowa kluczowe, status badania, faza badania, typ badania, grupowa wiekowa oraz płeć) | 6 pkt  |
+| Feature              | Methodology                                                                                       |
+| :------------------- | :------------------------------------------------------------------------------------------------ |
+| **Term weighting**   | Utilization of E5 model **embeddings** and persistent **vector storage** in `.joblib` files       |
+| **Query similarity** | Relevance assessment using the **cosine similarity measure**                                      |
+| **Error correction** | Implementation of **Levenshtein distance** to propose corrections in condition names              |
+| **Filtering**        | Utilization of **6 filters** (keywords, study status, study phase, study type, age group and sex) |
+| **Data export**      | Downloading the currently displayed page of search results to a **CSV file**                      |
 
-### Analiza i generowanie tekstów (30 pkt)
+### Analysis and text generation
 
-| Kryterium              | Metodologia                                                                                                                      | Punkty |
-| :--------------------- | :------------------------------------------------------------------------------------------------------------------------------- | :----- |
-| **Analiza sentymentu** | Automatyczne ocenianie rokowań badań na podstawie polaryzacji opisu za pomocą biblioteki **TextBlob**                            | 10 pkt |
-| **Generowanie opisów** | Tworzenie etykiet statusu rokowań badań na podstawie analizy sentymentu                                                          | 10 pkt |
-| **Wielojęzyczność**    | Tłumaczenie treści (tytuły, opisy, interwencje oraz lokalizacje) na **język polski** przy wykorzystaniu **API Google Translate** | 10 pkt |
+| Feature                    | Methodology                                                                                                                                 |
+| :------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Sentiment analysis**     | Automated assessment of trial prognoses based on description polarity using the **TextBlob** library                                        |
+| **Description generation** | Creating trial prognosis status labels based on sentiment analysis                                                                          |
+| **Multilingualism**        | Native **Polish** user interface with an on-demand option to translate selected content into **English** using the **Google Translate API** |
 
-### Wizualizacja i optymalizacja (25 pkt)
+### Visualization and optimization
 
-| Kryterium            | Metodologia                                                                                                                     | Punkty |
-| :------------------- | :------------------------------------------------------------------------------------------------------------------------------ | :----- |
-| **Typy wykresów**    | **Wykres liniowy** (dynamika badań), **słupkowy** (fazy badań i liczebność schorzeń) oraz **kołowy** (wielkość grup badawczych) | 12 pkt |
-| **Interaktywność**   | Pełna obsługa podpowiedzi na wykresach oraz funkcji przybliżania i oddalania na osiach czasu                                    | 8 pkt  |
-| **Pamięć podręczna** | Optymalizacja wydajności przez system **Flask Caching** dla wyników wyszukiwania, tłumaczeń i statystyk                         | 5 pkt  |
+| Feature           | Methodology                                                                                                                    |
+| :---------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| **Chart types**   | **Line chart** (trials dynamics), **bar chart** (trial phases and condition frequencies) and **pie chart** (study group sizes) |
+| **Interactivity** | Full support for chart tooltips and zoom in/out functions on timelines                                                         |
+| **Caching**       | Performance optimization via the **Flask Caching** system for search results, translations and statistics                      |
 
 ## 4. Struktura katalogów
 
 ```
 clinical-scope/
-├── data/                        # Surowe dane źródłowe
-│   ├── cancer.csv               # Dane dot. nowotworów
-│   ├── diabetes.csv             # Dane dot. cukrzycy
-│   └── heart.csv                # Dane dot. chorób serca
-├── instance/                    # Instancja bazy danych (generowana lokalnie)
-│   └── clinical_trials.db       # Relacyjna baza danych SQLite
-├── models/                      # Modele ML i zserializowane dane (generowane lokalnie)
-│   ├── embeddings_matrix.joblib # Macierz wektorów osadzeń
-│   └── unique_conditions.joblib # Lista unikalnych schorzeń
-├── services/                    # Rdzeń logiki biznesowej aplikacji
-│   ├── database.py              # Obsługa zapytań SQL i połączeń z bazą
-│   └── search.py                # Silnik wyszukiwania semantycznego
-├── static/                      # Zasoby statyczne
+├── data/                        # Raw source data
+│   ├── cancer.csv               # Data regarding cancer
+│   ├── diabetes.csv             # Data regarding diabetes
+│   └── heart.csv                # Data regarding heart diseases
+├── instance/                    # Database instance (generated locally)
+│   └── clinical_trials.db       # Relational SQLite database
+├── models/                      # ML models and serialized data (generated locally)
+│   ├── embeddings_matrix.joblib # Embeddings vector matrix
+│   └── unique_conditions.joblib # List of unique conditions
+├── services/                    # Core application business logic
+│   ├── database.py              # Handling SQL queries and database connections
+│   └── search.py                # Semantic search engine
+├── static/                      # Static assets
 │   └── css/
-│       └── style.css            # Style UI i zmienne systemowe CSS
-├── templates/                   # Widoki aplikacji
-│   ├── base.html                # Główny układ i importy bibliotek
-│   ├── index.html               # Strona główna z wyszukiwarką i filtrami
-│   └── stats.html               # Dashboard z interaktywnymi wykresami
-├── utils/                       # Słowniki i funkcje pomocnicze
-│   ├── dictionaries.py          # Mapowania dla wielojęzyczności i filtrów
-│   └── formatters.py            # Formatory danych
-├── app.py                       # Serce aplikacji, obsługa tras i pamięci podręcznej
-├── init_db.py                   # Skrypt inicjalizujący bazę danych
-├── README.md                    # Dokumentacja projektu
-└── requirements.txt             # Lista zależności projektu
+│       └── style.css            # UI styles and CSS system variables
+├── templates/                   # Application views
+│   ├── base.html                # Main layout and library imports
+│   ├── index.html               # Home page with search engine and filters
+│   └── stats.html               # Dashboard with interactive charts
+├── utils/                       # Dictionaries and helper functions
+│   ├── dictionaries.py          # Mappings for multilingualism and filters
+│   └── formatters.py            # Data formatters
+├── app.py                       # Application heart, routes handling and caching
+├── init_db.py                   # Database initialization script
+├── README.md                    # Project documentation
+└── requirements.txt             # List of project dependencies
 ```
